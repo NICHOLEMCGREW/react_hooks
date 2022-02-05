@@ -1,21 +1,76 @@
-import React, { Component } from "react";
 import "./App.css";
+import { useState } from "react";
+import Task from "./components/Tasks";
+import TaskForm from "./components/TaskForm";
 
-class App extends Component {
-  render() {
-    return (
-      <main
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-          textAlign: "center",
-        }}
-      >
-        <h1>React Hooks</h1>
-      </main>
-    );
+const App = () => {
+  const [tasks, setTasks] = useState([
+    {
+      id: 1, 
+      content: "Practice Code",
+      priority: 3,
+      done: false,
+      due_date: null,
+    },
+  ]);
+
+  const handleTaskDone = (id) => {
+
+
+    let newTasks = tasks.map((task) => {
+      if (id == task.id) {
+        task.done = !task.done;
+        document.getElementById(id).classList.toggle("done");
+      }
+    
+      return task;
+    });
+
+    setTasks(newTasks)
   }
-}
+
+  const handleTaskCreation = (event) => {
+    event.preventDefault();
+
+    let content = document.querySelector("#content");
+    let priority = document.querySelector("#priority");
+    let due_date = document.querySelector("#due_date");
+
+    let task = {
+      id: tasks[tasks.length - 1].id + 1 || 1, 
+      content: content.value,
+      priority: priority.value,
+      done: false,
+      due_date: due_date.value,
+    };
+
+    let newTasks = Array.from(tasks);
+
+    newTasks.push(task);
+
+    setTasks(newTasks);
+
+    content.value = "";
+    priority.value = "0";
+  };
+
+  return (
+    <main className="App">
+      <div className="App-header">
+        <div>
+          <h1>To-Do List</h1>
+            <TaskForm onSubmit={handleTaskCreation} />
+            <div className="task-container">
+          {tasks.map((task) => {
+            return (
+               <Task key={task.id} task={task} onClick={{handleTaskDone}} />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  </main>
+  );
+};
 
 export default App;
